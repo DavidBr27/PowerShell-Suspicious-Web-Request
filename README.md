@@ -35,15 +35,15 @@ Detecting such behavior is critical to identifying and disrupting an ongoing att
 
 ```kql
 DeviceFileEvents
-| top 20 by Timestamp desc
+| top 20 by TimeGenerated desc
 ```
 ```kql
 DeviceNetworkEvents
-| top 20 by Timestamp desc
+| top 20 by TimeGenerated desc
 ```
 ```kql
 DeviceProcessEvents
-| top 20 by Timestamp desc
+| top 20 by TimeGenerated desc
 ```
 
 3. Locate suspicious activity, e.g., `powershell.exe` executing `Invoke-WebRequest`.
@@ -51,19 +51,20 @@ DeviceProcessEvents
 4. Refine query for target device:
 
 ```kql
-let TargetDevice = "windows-target-1";
+let TargetDevice = "test-vm-david";
 DeviceProcessEvents
 | where DeviceName == TargetDevice
 | where FileName == "powershell.exe"
 | where ProcessCommandLine contains "Invoke-WebRequest"
 ```
 
-![Screenshot](https://github.com/user-attachments/assets/418f503e-ebab-4cb4-9541-8c1c30ccc56a)
+![image](https://github.com/user-attachments/assets/ecc12a71-21bf-47f1-ae34-682ea407176d)
+
 
 5. Confirm detection of known payloads:
 
 ```kql
-let TargetHostname = "windows-target-1";
+let TargetHostname = "test-vm-david";
 let ScriptNames = dynamic(["eicar.ps1", "exfiltratedata.ps1", "portscan.ps1", "pwncrypt.ps1"]);
 DeviceProcessEvents
 | where DeviceName == TargetHostname
@@ -73,7 +74,8 @@ DeviceProcessEvents
 | summarize Count = count() by AccountName, DeviceName, FileName, ProcessCommandLine
 ```
 
-![Screenshot](https://github.com/user-attachments/assets/9520d3df-b646-4ce6-a72e-52e1eaedc3f4)
+![image](https://github.com/user-attachments/assets/d0e3a51e-fc54-4cbc-9adb-90f5b7f53736)
+
 
 ---
 
@@ -88,7 +90,7 @@ DeviceProcessEvents
 - **Query**:
 
 ```kql
-let TargetDevice = "windows-target-1";
+let TargetDevice = "test-vm-david";
 DeviceProcessEvents
 | where DeviceName == TargetDevice
 | where FileName == "powershell.exe"
@@ -96,7 +98,7 @@ DeviceProcessEvents
 ```
 
 - **Frequency**: Every 4 hours  
-- **Lookup Period**: 24 hours  
+- **Lookup Period**: 48 hours  
 - **Incident Behavior**: Group alerts into one incident per day  
 
 3. Set **Entity Mappings**:
@@ -108,7 +110,7 @@ DeviceProcessEvents
 
 5. Save and activate! 🚀
 
-![Screenshot](https://github.com/user-attachments/assets/2cb640e9-9471-4439-a545-e3395bd2fd16)
+![image](https://github.com/user-attachments/assets/f96f76ac-e4e3-442f-9cc0-c564f21b1a7b)
 
 ---
 
@@ -123,7 +125,8 @@ Follow the **NIST 800-161: Incident Response Lifecycle**:
 1. **Validate Incident**:
    - Assign it to yourself and set the status to **Active** ✅.
 
-![Screenshot 2025-01-07 135609](https://github.com/user-attachments/assets/f1c4ba25-0a90-4924-86b9-1e87f25031f6)
+![image](https://github.com/user-attachments/assets/dda1840d-3fda-496b-bb35-5b6b1bce4ef5)
+
 
 2. **Investigate**:
    - Review logs and entity mappings 🗒️.
@@ -165,7 +168,7 @@ Follow the **NIST 800-161: Incident Response Lifecycle**:
 ## 🎯 **Incident Summary**
 | **Metric**                     | **Value**                        |
 |---------------------------------|-----------------------------------|
-| **Affected Device**            | `windows-target-1`               |
+| **Affected Device**            | `test-vm-david`               |
 | **Suspicious Commands**        | 4                                |
 | **Scripts Downloaded**         | `portscan.ps1`, `pwncrypt.ps1`, `eicar.ps1`, `exfiltratedata.ps1`   |
 | **Incident Status**            | Resolved                         |
